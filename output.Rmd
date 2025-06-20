@@ -1,0 +1,43 @@
+---
+title: "Ecological Statistical Analysis"
+output:
+  html_document:
+    theme: null
+    toc: false
+---
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(knitr)
+
+# Load data
+climate <- read.csv("climatedata.csv")
+
+# Summary function
+summary_table <- function(df, var) {
+  quant <- quantile(df[[var]], probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE)
+  tibble(
+    min = quant[1],
+    p25 = quant[2],
+    p50 = quant[3],
+    p75 = quant[4],
+    max = quant[5]
+  )
+}
+```
+
+```{r results, echo=FALSE, results='asis'}
+# C3 vs C4 Summary
+c3c4_summary <- climate %>%
+  count(C3C4) %>%
+  mutate(PERCENT = round(100 * n / sum(n))) %>%
+  rename(COUNT = n)
+print(kable(c3c4_summary))
+
+# Trait summaries
+print(kable(summary_table(climate, "MAP")))
+print(kable(summary_table(climate, "LL")))
+print(kable(summary_table(climate, "LW")))
+print(kable(summary_table(climate, "LA")))
+print(kable(summary_table(climate, "CH")))
+```
