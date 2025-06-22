@@ -2,13 +2,16 @@
 title: "Ecological Statistical Analysis"
 output:
   html_document:
-    theme: null
-    toc: false
+    theme: flatly
+    toc: true
+    toc_float: true
+    df_print: paged
 ---
 
 ```{r, include=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(knitr)
+library(kableExtra)
 
 # Load data
 climate <- read.csv("climatedata.csv")
@@ -32,12 +35,18 @@ c3c4_summary <- climate %>%
   count(C3C4) %>%
   mutate(PERCENT = round(100 * n / sum(n))) %>%
   rename(COUNT = n)
-print(kable(c3c4_summary))
+
+cat("## C3 vs C4 Summary\n\n")
+print(kable(c3c4_summary, caption = "C3 vs C4 Distribution") %>%
+        kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F))
 
 # Trait summaries
-print(kable(summary_table(climate, "MAP")))
-print(kable(summary_table(climate, "LL")))
-print(kable(summary_table(climate, "LW")))
-print(kable(summary_table(climate, "LA")))
-print(kable(summary_table(climate, "CH")))
+traits <- c("MAP", "LL", "LW", "LA", "CH")
+
+for (trait in traits) {
+  cat(paste0("## ", trait, " Quantile Summary\n\n"))
+  table <- summary_table(climate, trait)
+  print(kable(table, caption = paste(trait, "Quantile Summary")) %>%
+          kable_styling(bootstrap_options = c("striped", "hover"), full_width = F))
+}
 ```
