@@ -2,11 +2,28 @@
 title: "Ecological Statistical Analysis"
 output:
   html_document:
-    theme: flatly
+    theme: readable
     toc: true
     toc_float: true
     df_print: paged
 ---
+
+<style>
+body {
+  background-color: #f0fff0;
+  color: #003300;
+  font-family: "Helvetica Neue", sans-serif;
+}
+h1, h2, h3 {
+  color: #006400;
+}
+table {
+  background-color: #e8f5e9;
+}
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #d0f0c0;
+}
+</style>
 
 ```{r, include=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -16,15 +33,15 @@ library(kableExtra)
 # Load data
 climate <- read.csv("climatedata.csv")
 
-# Summary function
+# Function to create summary with quantiles
 summary_table <- function(df, var) {
   quant <- quantile(df[[var]], probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE)
   tibble(
-    min = quant[1],
-    p25 = quant[2],
-    p50 = quant[3],
-    p75 = quant[4],
-    max = quant[5]
+    Minimum = quant[1],
+    "25th Percentile" = quant[2],
+    Median = quant[3],
+    "75th Percentile" = quant[4],
+    Maximum = quant[5]
   )
 }
 ```
@@ -33,20 +50,29 @@ summary_table <- function(df, var) {
 # C3 vs C4 Summary
 c3c4_summary <- climate %>%
   count(C3C4) %>%
-  mutate(PERCENT = round(100 * n / sum(n))) %>%
-  rename(COUNT = n)
+  mutate(Percent = round(100 * n / sum(n))) %>%
+  rename("Photosynthesis Type" = C3C4, Count = n)
 
 cat("## C3 vs C4 Summary\n\n")
 print(kable(c3c4_summary, caption = "C3 vs C4 Distribution") %>%
         kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F))
 
-# Trait summaries
+# List of traits to summarize
 traits <- c("MAP", "LL", "LW", "LA", "CH")
+full_names <- c(
+  "Mean Annual Precipitation (MAP)",
+  "Leaf Length (LL)",
+  "Leaf Width (LW)",
+  "Leaf Area (LA)",
+  "Chlorophyll Content (CH)"
+)
 
-for (trait in traits) {
-  cat(paste0("## ", trait, " Quantile Summary\n\n"))
+for (i in seq_along(traits)) {
+  trait <- traits[i]
+  title <- full_names[i]
+  cat(paste0("## ", title, "\n\n"))
   table <- summary_table(climate, trait)
-  print(kable(table, caption = paste(trait, "Quantile Summary")) %>%
+  print(kable(table, caption = paste(title, "Quantile Summary")) %>%
           kable_styling(bootstrap_options = c("striped", "hover"), full_width = F))
 }
 ```
