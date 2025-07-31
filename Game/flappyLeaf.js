@@ -2,27 +2,36 @@ document.body.style.backgroundColor = "#e9fbe4"; // eco-friendly light green
 
 const container = document.createElement("div");
 container.style.display = "flex";
+container.style.flexDirection = "column";
+container.style.alignItems = "center";
+container.style.justifyContent = "center";
+container.style.width = "100vw";
+container.style.height = "100vh";
+container.style.overflow = "hidden";
 
 const canvas = document.getElementById("gameCanvas");
-canvas.width = 1200;
-canvas.height = 800;
+canvas.style.maxWidth = "100%";
+canvas.style.maxHeight = "100%";
 canvas.style.border = "2px solid #ccc";
-container.appendChild(canvas);
+canvas.width = window.innerWidth > 600 ? 1200 : window.innerWidth * 0.95;
+canvas.height = window.innerHeight > 600 ? 800 : window.innerHeight * 0.7;
 
+container.appendChild(canvas);
 document.body.innerHTML = "";
 document.body.appendChild(container);
 
 const sidebar = document.createElement("div");
-sidebar.style.marginLeft = "20px";
-sidebar.style.width = "350px";
+sidebar.style.marginTop = "20px";
+sidebar.style.width = "100%";
 sidebar.style.fontFamily = "Arial, sans-serif";
+sidebar.style.textAlign = "center";
 sidebar.innerHTML = `
     <h2>🌿 Flappy Leaf: The Transpiration Game 🌿</h2>
     <p><strong>By:</strong> The Greenhouse Gang</p>
     <p><em>Avoid natural disasters and get water however you can!</em></p>
     <hr>
     <h3>Cool Plant Facts</h3>
-    <ul>
+    <ul style="text-align: left; max-width: 600px; margin: auto;">
         <li><strong>Evapotranspiration:</strong> The sum of evaporation and plant transpiration from the Earth's surface.</li>
         <li><strong>Hydraulic Conductance:</strong> A plant's ability to transport water; it decreases with water stress.</li>
         <li><strong>Global Warming:</strong> Increases stress on plants and reduces water availability.</li>
@@ -30,11 +39,13 @@ sidebar.innerHTML = `
     </ul>
     <hr>
     <p><strong>Zones Flown Through:</strong> <span id="score">0</span></p>
+    <p><strong>Water Level:</strong> <span id="waterLevel">100</span></p>
     <p><strong>High Score:</strong> <span id="highScore">0</span></p>
 `;
 container.appendChild(sidebar);
 
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d", { alpha: false });
+ctx.imageSmoothingEnabled = false;
 
 let leafImg = new Image();
 leafImg.src = "leaf.webp";
