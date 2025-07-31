@@ -39,7 +39,6 @@ sidebar.innerHTML = `
     </ul>
     <hr>
     <p><strong>Zones Flown Through:</strong> <span id="score">0</span></p>
-    <p><strong>Water Level:</strong> <span id="waterLevel">100</span></p>
     <p><strong>High Score:</strong> <span id="highScore">0</span></p>
 `;
 container.appendChild(sidebar);
