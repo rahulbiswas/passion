@@ -1,37 +1,64 @@
-document.body.style.backgroundColor = "#e9fbe4"; // eco-friendly light green
+document.body.style.cssText = `
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #e9fbe4;
+  height: 100vh;
+  width: 100vw;
+`;
+
+document.body.innerHTML = ""; // Clear everything early
 
 const container = document.createElement("div");
 container.style.display = "flex";
-container.style.flexDirection = "column";
-container.style.alignItems = "center";
+container.style.flexDirection = "row";
+container.style.alignItems = "stretch";
 container.style.justifyContent = "center";
 container.style.width = "100vw";
 container.style.height = "100vh";
-container.style.overflow = "hidden";
+container.style.boxSizing = "border-box";
 
-const canvas = document.getElementById("gameCanvas");
-canvas.style.maxWidth = "100%";
-canvas.style.maxHeight = "100%";
-canvas.style.border = "2px solid #ccc";
-canvas.width = window.innerWidth > 600 ? 1200 : window.innerWidth * 0.95;
-canvas.height = window.innerHeight > 600 ? 800 : window.innerHeight * 0.7;
+const canvasWrapper = document.createElement("div");
+canvasWrapper.style.flex = "1 1 auto";
+canvasWrapper.style.display = "flex";
+canvasWrapper.style.alignItems = "center";
+canvasWrapper.style.justifyContent = "center";
+canvasWrapper.style.padding = "0";
+canvasWrapper.style.boxSizing = "border-box";
+canvasWrapper.style.height = "100%";
+canvasWrapper.style.width = "100%";
 
-container.appendChild(canvas);
-document.body.innerHTML = "";
-document.body.appendChild(container);
+const canvas = document.getElementById("gameCanvas") || document.createElement("canvas");
+canvas.id = "gameCanvas";
+canvas.style.display = "block";
+canvas.style.backgroundColor = "#e9fbe4";
+canvas.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.1)";
+canvas.style.objectFit = "contain";
+canvasWrapper.appendChild(canvas);
+
+function resizeCanvas() {
+    const sidebarWidth = 300;
+    canvas.width = window.innerWidth - sidebarWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
 const sidebar = document.createElement("div");
-sidebar.style.marginTop = "20px";
-sidebar.style.width = "100%";
+sidebar.style.flex = "0 0 300px";
 sidebar.style.fontFamily = "Arial, sans-serif";
-sidebar.style.textAlign = "center";
+sidebar.style.padding = "20px";
+sidebar.style.backgroundColor = "#e9fbe4";
+sidebar.style.boxSizing = "border-box";
+sidebar.style.overflowY = "auto";
 sidebar.innerHTML = `
     <h2>🌿 Flappy Leaf: The Transpiration Game 🌿</h2>
     <p><strong>By:</strong> The Greenhouse Gang</p>
     <p><em>Avoid natural disasters and get water however you can!</em></p>
     <hr>
     <h3>Cool Plant Facts</h3>
-    <ul style="text-align: left; max-width: 600px; margin: auto;">
+    <ul style="text-align: left;">
         <li><strong>Evapotranspiration:</strong> The sum of evaporation and plant transpiration from the Earth's surface.</li>
         <li><strong>Hydraulic Conductance:</strong> A plant's ability to transport water; it decreases with water stress.</li>
         <li><strong>Global Warming:</strong> Increases stress on plants and reduces water availability.</li>
@@ -41,10 +68,14 @@ sidebar.innerHTML = `
     <p><strong>Zones Flown Through:</strong> <span id="score">0</span></p>
     <p><strong>High Score:</strong> <span id="highScore">0</span></p>
 `;
+
+container.appendChild(canvasWrapper);
 container.appendChild(sidebar);
+document.body.appendChild(container);
 
 const ctx = canvas.getContext("2d", { alpha: false });
-ctx.imageSmoothingEnabled = false;
+ctx.fillStyle = "#e9fbe4";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 let leafImg = new Image();
 leafImg.src = "leaf.webp";
