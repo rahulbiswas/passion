@@ -158,6 +158,8 @@ let leaf = {
   velocity: 0
 };
 
+let bgX = 0;
+let bgScrollSpeed = 1;
 let obstacles = [];
 let powerUps = [];
 let frame = 0;
@@ -312,7 +314,9 @@ function resetGame() {
 
 function drawBackground() {
   if (bgImg.loaded) {
-    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+    bgX = (bgX - bgScrollSpeed) % canvas.width;
+    ctx.drawImage(bgImg, bgX, 0, canvas.width, canvas.height);
+    ctx.drawImage(bgImg, bgX + canvas.width, 0, canvas.width, canvas.height);
   } else {
     ctx.fillStyle = '#e9fbe4';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
