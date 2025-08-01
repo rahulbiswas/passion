@@ -95,6 +95,12 @@ fireImg.src = "fire.jpg";
 let axeImg = new Image();
 axeImg.src = "axe.jpg";
 
+let arrowImg = new Image();
+arrowImg.src = "downarrow.png"
+
+let uparrowImg = new Image();
+uparrowImg.src = "uparrow.png"
+
 let bgImg = new Image();
 bgImg.src = "Flappybird.jpg";
 bgImg.onload = () => {
@@ -123,7 +129,7 @@ Object.assign(sidebar.style, {
 sidebar.innerHTML = `
     <div>
         <h2 style="text-align: center;">🌿 Flappy Leaf: The Transpiration Game 🌿</h2>
-        <p style="text-align: center;"><strong>By:</strong> The Greenhouse Gang</p>
+        <p style="text-align: center;"><strong>By:</strong> Sid Biswas, from The Greenhouse Gang</p>
         <p style="text-align: center;"><em>Avoid natural disasters and get water however you can!</em></p>
         <hr>
         <h3>Cool Plant Facts</h3>
@@ -147,7 +153,7 @@ document.body.appendChild(container);
 
 localStorage.setItem("flappyLeafHighScore", 0);
 
-const gravity = 0.25;
+let gravity = 0.25;
 const groundOffset = 70;
 let obstacleSpeed = 3;
 let leaf = {
@@ -176,7 +182,7 @@ function drawLeaf() {
 
 function drawObstacles() {
   obstacles.forEach(obs => {
-    let img = obs.type === 'drought' ? droughtImg : obs.type === 'tornado' ? tornadoImg : obs.type === 'fire' ? fireImg : axeImg;
+    let img = obs.type === 'drought' ? droughtImg : obs.type === 'tornado' ? tornadoImg : obs.type === 'fire' ? fireImg : obs.type === 'arrow' ? arrowImg : obs.type === 'uparrow' ? uparrowImg : axeImg;
     ctx.drawImage(img, obs.x, obs.y, obs.width, obs.height);
   });
 }
@@ -215,7 +221,7 @@ function updateGame() {
   }
 
   if (frame % Math.floor(spawnRate) === 0) {
-    let type = Math.random() < 0.05 ? "instantDeath" : ["drought", "tornado", "fire"][Math.floor(Math.random() * 3)];
+    let type = Math.random() < 0.05 ? "instantDeath" : ["drought", "tornado", "fire", "arrow", "uparrow"][Math.floor(Math.random() * 5)];
     obstacles.push({
       x: canvas.width,
       y: Math.random() * (groundLevel - 200),
@@ -245,11 +251,23 @@ function updateGame() {
           deathReason = "You hit a killer obstacle!";
           resetGame();
           return;
-        } else {
+        } else if (obs.type != "arrow" && obs.type != "uparrow") {
           leaf.x = Math.max(20, leaf.x - 20);
           waterLevel -= 10;
           obs.hit = true;
           deathReason = `Hit a ${obs.type} obstacle!`;
+        } else if (obs.type === "arrow") {
+        	obs.hit = true;
+			deathReason = `Hit a ${obs.type} obstacle!`;
+			if (gravity <= 0.95) {
+				gravity += 0.05
+			}
+        } else {
+        	obs.hit = true;
+			deathReason = `Hit a ${obs.type} obstacle!`;
+			if (gravity >= 0.05) {
+				gravity -= 0.05
+			}
         }
       }
     } else if (obs.x + obs.width < leaf.x && !obs.passed) {
@@ -304,6 +322,7 @@ function resetGame() {
   restartTimeout = true;
   showInstructions = true;
   gameRunning = false;
+  gravity = 0.25
   drawInstructions(`${deathReason} Final Score: ${score}`);
   score = 0;
   frame = 0;
@@ -341,7 +360,7 @@ function drawInstructions(reason = "") {
   }
   ctx.fillStyle = "#000";
   ctx.fillText("Click to flap your leaf and fly through the obstacles.", 330, 280);
-  ctx.fillText("Avoid hazards like drought, tornado, and fire.", 370, 320);
+  ctx.fillText("Avoid hazards like drought, tornado, fire, and grav arrows", 300, 320);
   ctx.fillText("Collect clouds, roots, and water to stay hydrated.", 340, 360);
   ctx.fillText("Hitting the ground also drains your water.", 370, 400);
   ctx.fillText("The axe is an insta-kill, avoid it to stay alive", 360, 440);
@@ -372,6 +391,7 @@ canvas.addEventListener("click", () => {
     startGame();
   } else {
     leaf.velocity = -9;
+	waterLevel -= 0.25;
   }
 });
 
@@ -380,5 +400,6 @@ document.addEventListener("keydown", () => {
     startGame();
   } else {
     leaf.velocity = -9;
+	waterLevel -= 0.25;
   }
 });
